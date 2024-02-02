@@ -2,12 +2,12 @@ from datetime import datetime
 
 from fastapi import FastAPI, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from zoneinfo import ZoneInfo
 
 from src.pi_cloud.models import FileUpload
-from src.pi_cloud.worker import store_file
+from src.pi_cloud.worker import Worker
 
 app = FastAPI()
+worker = Worker(app)
 
 app.add_middleware(
     CORSMiddleware,
@@ -23,6 +23,11 @@ def read_root():
     return {"Hello": "World"}
 
 
+@app.get("/files")
+def list_files() -> list[dict[str, str]]:
+    return worker.get_stored_files_preview()
+
+
 @app.post("/file/upload")
 def upload_file(file: UploadFile):
     # https://fastapi.tiangolo.com/tutorial/request-files/#uploadfile
@@ -32,9 +37,8 @@ def upload_file(file: UploadFile):
         name=file.filename,
         size=file.size,
         content=file.file.read(),
-        upload_time=datetime.now().astimezone(ZoneInfo("UTC")),
     )
 
     # Write file to disk
-    store_file(file_upload)
+    worker.store_file(file_upload)
     return file_upload.model_dump()
