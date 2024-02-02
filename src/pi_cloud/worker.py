@@ -6,7 +6,8 @@ from fastapi import FastAPI
 
 from src.pi_cloud.models import FileMetadata, FileUpload
 
-UPLOADS_DIR = Path("uploads")
+UPLOADS_DIR: str = "uploads"
+DB_FILE: str = "file_metadata.db"
 
 
 class Worker:
@@ -19,7 +20,7 @@ class Worker:
     def _read_file_metadata(self) -> dict[str, FileMetadata]:
         try:
             file_metadata: dict = {}
-            with Path.open("file_metadata.db", "rb") as file:
+            with Path.open(DB_FILE, "rb") as file:
                 file_metadata = pickle.load(file)  # noqa: S301
             for file_id, metadata in file_metadata.items():
                 self.stored_files[file_id] = FileMetadata(**metadata)
@@ -27,14 +28,14 @@ class Worker:
             return {}
 
     def get_file(self, file_id: str) -> bytes:
-        with Path.open(f"{UPLOADS_DIR.name}/{file_id}", "rb") as f:
+        with Path.open(f"{UPLOADS_DIR}/{file_id}", "rb") as f:
             return f.read()
 
     def store_file(self, file: FileUpload) -> FileMetadata:
         """
         Store file in 'uploads' directory with its uuid as the filename
         """
-        with Path.open(f"{UPLOADS_DIR.name}/{file.file_id}", "wb") as f:
+        with Path.open(f"{UPLOADS_DIR}/{file.file_id}", "wb") as f:
             f.write(file.content)
         print("Wrote file to disk")
         metadata = FileMetadata(
@@ -52,7 +53,7 @@ class Worker:
         file_metadata: dict = {}
         for file_id, metadata in self.stored_files.items():
             file_metadata[file_id] = metadata.model_dump()
-        with Path.open("file_metadata.db", "wb") as file:
+        with Path.open(DB_FILE, "wb") as file:
             pickle.dump(file_metadata, file)
 
     def get_stored_files_preview(self) -> list[dict[str, str]]:
