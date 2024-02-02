@@ -1,7 +1,6 @@
-from datetime import datetime
-
 from fastapi import FastAPI, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 
 from src.pi_cloud.models import FileMetadata, FileUpload
 from src.pi_cloud.worker import Worker
@@ -29,8 +28,14 @@ def list_files() -> list[dict[str, str]]:
 
 
 @app.get("/file/{file_id}")
-def get_file(file_id: str) -> bytes:
+def get_file(file_id: str) -> FileResponse:
     return worker.get_file(file_id)
+
+
+@app.delete("/file/{file_id}")
+def delete_file(file_id: str) -> dict[str, str]:
+    worker.delete_file(file_id)
+    return {"message": "File deleted"}
 
 
 @app.get("/file/{file_id}/metadata")
