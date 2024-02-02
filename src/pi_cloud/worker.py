@@ -19,9 +19,8 @@ class Worker:
     def _read_file_metadata(self) -> dict[str, FileMetadata]:
         try:
             file_metadata: dict = {}
-            with Path.open("file_metadata.json", "r") as file:
-                file_metadata = json.load(file)
-                # return pickle.load(file)
+            with Path.open("file_metadata.db", "rb") as file:
+                file_metadata = pickle.load(file)  # noqa: S301
             for file_id, metadata in file_metadata.items():
                 self.stored_files[file_id] = FileMetadata(**metadata)
         except Exception:
@@ -51,14 +50,10 @@ class Worker:
 
     def write_file_metadata(self) -> None:
         file_metadata: dict = {}
-        print(self.stored_files)
         for file_id, metadata in self.stored_files.items():
             file_metadata[file_id] = metadata.model_dump()
-        print(json.dumps(file_metadata, indent=4))
-        with Path.open("file_metadata.json", "w") as file:
-            json.dump(file_metadata, file)
-            # pickle.dump(self.stored_files, file)
-        print("yuh")
+        with Path.open("file_metadata.db", "wb") as file:
+            pickle.dump(file_metadata, file)
 
     def get_stored_files_preview(self) -> list[dict[str, str]]:
         preview = []
