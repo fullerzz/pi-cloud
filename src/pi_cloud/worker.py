@@ -15,8 +15,11 @@ class Worker:
 
     @staticmethod
     def _read_file_metadata() -> dict[str, FileMetadata]:
-        with Path.open("file_metadata.db", "rb") as file:
-            return pickle.load(file)  # noqa: S301
+        try:
+            with Path.open("file_metadata.db", "rb") as file:
+                return pickle.load(file)  # noqa: S301
+        except Exception:
+            return {}
 
     def get_file(self, file_id: str) -> bytes:
         with Path.open(f"{UPLOADS_DIR.name}/{file_id}", "rb") as f:
