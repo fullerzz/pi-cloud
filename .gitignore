@@ -163,4 +163,4 @@ cython_debug/
 
 .vscode/
 
-file_metadata.db
+file_metadata*

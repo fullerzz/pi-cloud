@@ -26,3 +26,8 @@ class FileMetadata(BaseModel):
     file_id: str
     upload_time: str
     tags: list[str]
+
+
+class StoredFile(BaseModel):
+    file_id: str
+    metadata: FileMetadata

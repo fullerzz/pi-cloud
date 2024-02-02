@@ -3,7 +3,7 @@ from datetime import datetime
 from fastapi import FastAPI, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.pi_cloud.models import FileUpload
+from src.pi_cloud.models import FileMetadata, FileUpload
 from src.pi_cloud.worker import Worker
 
 app = FastAPI()
@@ -39,16 +39,16 @@ def get_file_metadata(file_id: str) -> dict[str, str | int | list]:
 
 
 @app.post("/file/upload")
-def upload_file(file: UploadFile):
+def upload_file(file: UploadFile) -> FileMetadata:
     # https://fastapi.tiangolo.com/tutorial/request-files/#uploadfile
-
+    print("Starting file upload")
     # Create FileUpload instance with file paramater
     file_upload = FileUpload(
         name=file.filename,
         size=file.size,
         content=file.file.read(),
     )
-
+    print("FileUpload instance created")
     # Write file to disk
-    worker.store_file(file_upload)
-    return file_upload.model_dump()
+    metadata: FileMetadata = worker.store_file(file_upload)
+    return metadata
