@@ -28,6 +28,16 @@ def list_files() -> list[dict[str, str]]:
     return worker.get_stored_files_preview()
 
 
+@app.get("/file/{file_id}")
+def get_file(file_id: str) -> bytes:
+    return worker.get_file(file_id)
+
+
+@app.get("/file/{file_id}/metadata")
+def get_file_metadata(file_id: str) -> dict[str, str | int | list]:
+    return worker.stored_files[file_id].model_dump()
+
+
 @app.post("/file/upload")
 def upload_file(file: UploadFile):
     # https://fastapi.tiangolo.com/tutorial/request-files/#uploadfile

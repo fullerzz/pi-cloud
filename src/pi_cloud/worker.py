@@ -18,6 +18,10 @@ class Worker:
         with Path.open("file_metadata.db", "rb") as file:
             return pickle.load(file)  # noqa: S301
 
+    def get_file(self, file_id: str) -> bytes:
+        with Path.open(f"{UPLOADS_DIR.name}/{file_id}", "rb") as f:
+            return f.read()
+
     def store_file(self, file: FileUpload) -> str:
         """
         Store file in 'uploads' directory with its uuid as the filename
@@ -41,5 +45,5 @@ class Worker:
     def get_stored_files_preview(self) -> list[dict[str, str]]:
         preview = []
         for file_metadata in self.stored_files.values():
-            preview.append(file_metadata.model_dump(include={"name", "upload_time"}))  # noqa: PERF401
+            preview.append(file_metadata.model_dump(include={"name", "upload_time", "file_id"}))  # noqa: PERF401
         return preview
