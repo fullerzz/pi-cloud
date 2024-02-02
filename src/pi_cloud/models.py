@@ -1,6 +1,8 @@
 from datetime import datetime
+from uuid import uuid4
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+from zoneinfo import ZoneInfo
 
 
 class FileUpload(BaseModel):
@@ -11,5 +13,21 @@ class FileUpload(BaseModel):
     name: str
     size: int
     content: bytes
-    upload_time: datetime
+    file_id: str = Field(default_factory=lambda: uuid4().hex)
+    upload_time: datetime = Field(
+        default_factory=lambda: datetime.now().astimezone(ZoneInfo("UTC"))
+    )
     tags: list[str] = []
+
+
+class FileMetadata(BaseModel):
+    name: str
+    size: int
+    file_id: str
+    upload_time: str
+    tags: list[str]
+
+
+class StoredFile(BaseModel):
+    file_id: str
+    metadata: FileMetadata
