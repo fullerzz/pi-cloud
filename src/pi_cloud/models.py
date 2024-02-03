@@ -1,7 +1,7 @@
 from datetime import datetime
 from uuid import uuid4
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, HttpUrl, computed_field
 from zoneinfo import ZoneInfo
 
 
@@ -26,6 +26,11 @@ class FileMetadata(BaseModel):
     file_id: str
     upload_time: str
     tags: list[str]
+
+    @computed_field
+    @property
+    def link(self) -> HttpUrl:
+        return f"http://pi.local:8000/file/{self.file_id}"
 
 
 class StoredFile(BaseModel):

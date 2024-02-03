@@ -70,5 +70,7 @@ class Worker:
     def get_stored_files_preview(self) -> list[dict[str, str]]:
         preview = []
         for file_metadata in self.stored_files.values():
-            preview.append(file_metadata.model_dump(include={"name", "upload_time", "file_id"}))  # noqa: PERF401
+            preview.append(  # noqa: PERF401
+                file_metadata.model_dump(include={"name", "upload_time", "tags", "link"})
+            )
         return preview
