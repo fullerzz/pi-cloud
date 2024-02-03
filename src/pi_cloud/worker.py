@@ -71,6 +71,6 @@ class Worker:
         preview = []
         for file_metadata in self.stored_files.values():
             preview.append(  # noqa: PERF401
-                file_metadata.model_dump(include={"name", "upload_time", "tags", "link"})
+                file_metadata.model_dump(include={"name", "upload_time", "link"})
             )
         return preview

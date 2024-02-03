@@ -30,7 +30,7 @@ class FileMetadata(BaseModel):
     @computed_field
     @property
     def link(self) -> HttpUrl:
-        return f"http://pi.local:8000/file/{self.file_id}"
+        return f"http://pi.local:8000/file/{self.file_id!s}"
 
 
 class StoredFile(BaseModel):
